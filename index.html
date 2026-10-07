@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For Meghla</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: radial-gradient(circle at 50% 30%, #3a2a78 0%, #1b1740 60%, #120f2d 100%);
+    color: #fff;
+    font-family: Georgia, "Times New Roman", serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    padding: 24px;
+  }
+  canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+  .card { position: relative; z-index: 2; max-width: 560px; }
+  .cake { font-size: 72px; line-height: 1; margin-bottom: 12px; animation: float 3s ease-in-out infinite; }
+  h1 {
+    font-size: clamp(34px, 9vw, 64px);
+    font-weight: normal;
+    line-height: 1.15;
+    color: #ffd166;
+  }
+  h2 {
+    font-size: clamp(40px, 12vw, 84px);
+    font-weight: bold;
+    font-style: italic;
+    margin: 6px 0 20px;
+    color: #ff7eb3;
+    text-shadow: 0 0 24px rgba(255, 126, 179, 0.45);
+  }
+  p {
+    font-size: clamp(17px, 4.5vw, 21px);
+    line-height: 1.6;
+    color: #e8e4ff;
+    max-width: 46ch;
+    margin: 0 auto 28px;
+  }
+  button {
+    font: inherit;
+    font-size: 18px;
+    color: #1b1740;
+    background: #ffd166;
+    border: 0;
+    border-radius: 999px;
+    padding: 14px 32px;
+    cursor: pointer;
+    transition: transform .15s ease;
+  }
+  button:hover { transform: scale(1.05); }
+  button:active { transform: scale(0.97); }
+  button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @media (prefers-reduced-motion: reduce) { .cake { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div class="card">
+  <div class="cake" aria-hidden="true">🎂</div>
+  <h1>Happy Birthday</h1>
+  <h2 id="name">Meghla</h2>
+  <p>
+    Wishing you a day full of laughter, good food and everyone who loves you.
+    May this new year bring you happiness, success and all the things you dream of.
+  </p>
+  <button id="btn">Tap for a surprise 🎉</button>
+</div>
+
+<script>
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  let W, H, pieces = [];
+  const colors = ["#ffd166", "#ff7eb3", "#4ecdc4", "#a78bfa", "#ffffff", "#ff9f68"];
+
+  function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+  addEventListener("resize", resize);
+  resize();
+
+  function burst(count) {
+    for (let i = 0; i < count; i++) {
+      pieces.push({
+        x: Math.random() * W,
+        y: -20 - Math.random() * H * 0.4,
+        w: 6 + Math.random() * 8,
+        h: 8 + Math.random() * 10,
+        vx: -1.5 + Math.random() * 3,
+        vy: 2 + Math.random() * 4,
+        rot: Math.random() * Math.PI * 2,
+        vr: -0.2 + Math.random() * 0.4,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    pieces.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    pieces = pieces.filter(p => p.y < H + 30);
+    requestAnimationFrame(tick);
+  }
+
+  burst(120);
+  tick();
+  document.getElementById("btn").addEventListener("click", () => burst(220));
+</script>
+</body>
+</html>
